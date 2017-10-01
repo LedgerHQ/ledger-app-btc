@@ -47,6 +47,10 @@ else ifeq ($(COIN),litecoin)
 # Litecoin
 DEFINES   += BTCHIP_P2PKH_VERSION=48 BTCHIP_P2SH_VERSION=5 BTCHIP_COIN_FAMILY=1 BTCHIP_COINID=\"Litecoin\" COINID_UPCASE=\"LITECOIN\" COLOR_HDR=0xCCCCCC COLOR_DB=0xE6E6E6 COINID_NAME=\"Litecoin\" COINID=$(COIN) BTCHIP_COINID_SHORT=\"LTC\" COIN_LITECOIN
 APPNAME ="Litecoin"
+else ifeq ($(COIN),gamecredits)
+# Gamecredits
+DEFINES   += BTCHIP_P2PKH_VERSION=38 BTCHIP_P2SH_VERSION=5 BTCHIP_COIN_FAMILY=1 BTCHIP_COINID=\"Gamecredits\" COINID_UPCASE=\"GAMECREDITS\" COLOR_HDR=0x535353 COLOR_DB=0xEBEBEB COINID_NAME=\"GAMECREDITS\" COINID=$(COIN) BTCHIP_COINID_SHORT=\"GAME\" COIN_GAMECREDITS
+APPNAME ="Gamecredits"
 else ifeq ($(COIN),dogecoin)
 # Doge
 DEFINES   += BTCHIP_P2PKH_VERSION=30 BTCHIP_P2SH_VERSION=22 BTCHIP_COIN_FAMILY=1 BTCHIP_COINID=\"Dogecoin\" COINID_UPCASE=\"DOGECOIN\" COLOR_HDR=0x65D196 COLOR_DB=0xB2E8CB COINID_NAME=\"Dogecoin\" COINID=$(COIN) BTCHIP_COINID_SHORT=\"DOGE\" COIN_DOGE
@@ -76,7 +80,7 @@ DEFINES += BTCHIP_P2PKH_VERSION=55 BTCHIP_P2SH_VERSION=85 BTCHIP_COIN_FAMILY=2 B
 APPNAME ="PoSW"
 else
 ifeq ($(filter clean,$(MAKECMDGOALS)),)
-$(error Unsupported COIN - use bitcoin_testnet, bitcoin, bitcoin_cash, litecoin, dogecoin, dash, zcash, komodo, stratis, peercoin, posw) 
+$(error Unsupported COIN - use bitcoin_testnet, bitcoin, bitcoin_cash, litecoin, gamecredits, dogecoin, dash, zcash, komodo, stratis, peercoin, posw) 
 endif
 endif
 
