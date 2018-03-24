@@ -129,12 +129,18 @@ DEFINES   += COIN_P2PKH_VERSION=58 COIN_P2SH_VERSION=50 COIN_FAMILY=3 COIN_COINI
 APPNAME ="Qtum"
 APP_LOAD_PARAMS += --path "44'/88'" --path "0'/45342'" --path "20698'/3053'/12648430'"
 else ifeq ($(COIN),hcash)
+# Hcash
 DEFINES   += COIN_P2PKH_VERSION=40 COIN_P2SH_VERSION=100 COIN_FAMILY=2 COIN_COINID=\"HShare\" COIN_COINID_HEADER=\"HCASH\" COIN_COLOR_HDR=0x57448D COIN_COLOR_DB=0xABA2C6 COIN_COINID_NAME=\"HCash\" COIN_COINID_SHORT=\"HCASH\" COIN_KIND=COIN_KIND_HCASH COIN_FLAGS=FLAG_PEERCOIN_SUPPORT
 APPNAME ="HCash"
 APP_LOAD_PARAMS += --path $(APP_PATH)
+else ifeq ($(COIN),zcoin)
+#Zcoin
+DEFINES   += COIN_P2PKH_VERSION=82 COIN_P2SH_VERSION=7 COIN_FAMILY=1 COIN_COINID=\"Zcoin\" COIN_COINID_HEADER=\"ZCOIN\" COIN_COLOR_HDR=0x3EAD54 COIN_COLOR_DB=0xA3DCAE COIN_COINID_NAME=\"Zcoin\" COIN_KIND=COIN_KIND_ZCOIN COIN_COINID_SHORT=\"XZC\"
+APPNAME ="Zcoin" 
+APP_LOAD_PARAMS += --path $(APP_PATH)
 else
 ifeq ($(filter clean,$(MAKECMDGOALS)),)
-$(error Unsupported COIN - use bitcoin_testnet, bitcoin, bitcoin_cash, bitcoin_gold, litecoin, dogecoin, dash, zcash, komodo, stratis, peercoin, posw, pivx, viacoin, vertcoin, stealthcoin, digibyte, qtum, hcash) 
+$(error Unsupported COIN - use bitcoin_testnet, bitcoin, bitcoin_cash, bitcoin_gold, litecoin, dogecoin, dash, zcash, komodo, stratis, peercoin, posw, pivx, viacoin, vertcoin, stealthcoin, digibyte, qtum, hcash, zcoin) 
 endif
 endif
 

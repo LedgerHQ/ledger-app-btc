@@ -265,6 +265,7 @@ typedef enum btchip_coin_kind_e {
     COIN_KIND_DIGIBYTE,
     COIN_KIND_QTUM,
     COIN_KIND_HCASH,
+    COIN_KIND_ZCOIN,
 } btchip_coin_kind_t;
 
 typedef struct btchip_altcoin_config_s {
