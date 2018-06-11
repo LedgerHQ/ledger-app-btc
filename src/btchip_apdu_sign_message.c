@@ -123,13 +123,24 @@ unsigned short btchip_apdu_sign_message_internal() {
                     cx_sha256_init(&btchip_context_D.transactionHashFull);
                     cx_sha256_init(
                         &btchip_context_D.transactionHashAuthorization);
+#ifdef SIGN_MSG_PREFIX
+                    uint8_t signMsgPrefixLen = strlen(SIGN_MSG_PREFIX);
+                    chunkLength =
+                        signMsgPrefixLen + SIGNMAGIC_LENGTH;
+                    cx_hash(&btchip_context_D.transactionHashFull.header, 0,
+                            &chunkLength, 1, NULL);
+                    cx_hash(&btchip_context_D.transactionHashFull.header, 0,
+                             SIGN_MSG_PREFIX,
+                             signMsgPrefixLen, NULL);
+#else
                     chunkLength =
                         btchip_context_D.coinIdLength + SIGNMAGIC_LENGTH;
                     cx_hash(&btchip_context_D.transactionHashFull.header, 0,
                             &chunkLength, 1, NULL);
                     cx_hash(&btchip_context_D.transactionHashFull.header, 0,
-                            btchip_context_D.coinId,
-                            btchip_context_D.coinIdLength, NULL);
+                             btchip_context_D.coinId,
+                             btchip_context_D.coinIdLength, NULL);
+#endif
                     cx_hash(&btchip_context_D.transactionHashFull.header, 0,
                             (unsigned char *)SIGNMAGIC, SIGNMAGIC_LENGTH, NULL);
                     if (btchip_context_D.transactionSummary.messageLength <

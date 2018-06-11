@@ -20,6 +20,14 @@
 
 #define SIGHASH_ALL 0x01
 
+#ifdef HAVE_PART_SUPPORT
+static const unsigned char order[32] = {
+    0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff,
+    0xff, 0xff, 0xff, 0xfe, 0xba, 0xae, 0xdc, 0xe6, 0xaf, 0x48, 0xa0, 0x3b,
+    0xbf, 0xd2, 0x5e, 0x8c, 0xd0, 0x36, 0x41, 0x41
+};
+#endif
+
 unsigned short btchip_apdu_hash_sign() {
     unsigned long int lockTime;
     uint32_t sighashType;
@@ -34,6 +42,9 @@ unsigned short btchip_apdu_hash_sign() {
     unsigned short sw;
     unsigned char keyPath[MAX_BIP32_PATH_LENGTH];
     cx_sha256_t localHash;
+#ifdef HAVE_PART_SUPPORT
+    unsigned char lenSharedSecret;
+#endif
 
     SB_CHECK(N_btchip.bkp.config.operationMode);
     switch (SB_GET(N_btchip.bkp.config.operationMode)) {
@@ -116,6 +127,13 @@ unsigned short btchip_apdu_hash_sign() {
             // TODO optional : check the public key against the associated non
             // blank input to sign
 
+#ifdef HAVE_PART_SUPPORT
+            lenSharedSecret = *(parameters++);
+            if (lenSharedSecret == 32)
+            {
+                cx_math_addm(btchip_private_key_D.d, btchip_private_key_D.d, parameters, order, 32);
+            };
+#endif
             // Finalize the hash
 
             btchip_write_u32_le(dataBuffer, lockTime);

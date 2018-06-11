@@ -43,6 +43,9 @@ static void btchip_apdu_hash_input_finalize_full_reset(void) {
 }
 
 static bool check_output_displayable() {
+#if HAVE_PART_SUPPORT
+    return true; // display all outputs
+#endif
     bool displayable = true;
     unsigned char amount[8], isOpReturn, isP2sh, isNativeSegwit, j,
         nullAmount = 1;
@@ -191,6 +194,24 @@ static bool handle_output_state() {
 
         discardSize += 8 + scriptSize;
 
+#ifdef HAVE_PART_SUPPORT
+        if (!btchip_context_D.segwitParsedOnce)
+        {
+            // No amount on data output
+            int amountOfs = 8;
+            for (size_t k = 0; k < 8; ++k) {
+                if (btchip_context_D.currentOutput[k] == 0)
+                    continue;
+                amountOfs = 0;
+                break;
+            };
+
+            cx_hash(&btchip_context_D.transactionHashFull.header, 0,
+                btchip_context_D.currentOutput + amountOfs,
+                discardSize - amountOfs, NULL);
+        };
+#endif
+
         if (check_output_displayable()) {
             btchip_context_D.io_flags |= IO_ASYNCH_REPLY;
 
@@ -310,10 +331,15 @@ unsigned short btchip_apdu_hash_input_finalize_full_internal(
             // given data
             // For SegWit, this has been reset to hold hashOutputs
             if (!btchip_context_D.segwitParsedOnce) {
+#ifdef HAVE_PART_SUPPORT
+
+#else
                 cx_hash(&btchip_context_D.transactionHashFull.header, 0,
                         G_io_apdu_buffer + ISO_OFFSET_CDATA + hashOffset,
                         apduLength - hashOffset, NULL);
+#endif
             }
+
 
             if (btchip_context_D.transactionContext.firstSigned) {
                 if ((btchip_context_D.currentOutputOffset + apduLength) >
@@ -329,6 +355,7 @@ unsigned short btchip_apdu_hash_input_finalize_full_internal(
 
                 // Check if the legacy UI can be applied
                 if (!(G_coin_config->kind == COIN_KIND_QTUM) &&
+                    !(G_coin_config->kind == COIN_KIND_PARTICL) &&
                     (G_io_apdu_buffer[ISO_OFFSET_P1] == FINALIZE_P1_LAST) &&
                     !btchip_context_D.tmpCtx.output.multipleOutput &&
                     prepare_full_output(1)) {

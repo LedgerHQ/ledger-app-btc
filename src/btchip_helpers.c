@@ -138,6 +138,20 @@ unsigned char btchip_output_script_is_op_call(unsigned char *buffer) {
             (buffer[buffer[0]] == 0xC2));
 }
 
+#ifdef HAVE_PART_SUPPORT
+unsigned char btchip_output_script_is_coldstake(unsigned char *buffer) {
+    static const unsigned char OP_ISCOINSTAKE = 0xb8;
+    static const unsigned char OP_HASH160 = 0xa9;
+
+    //if (buffer[0] == 64 &&
+    if (buffer[1] == OP_ISCOINSTAKE
+        && buffer[4] == OP_HASH160)
+        return 1;
+
+    return 0;
+}
+#endif
+
 unsigned char btchip_rng_u8_modulo(unsigned char modulo) {
     unsigned int rng_max = 256 % modulo;
     unsigned int rng_limit = 256 - rng_max;
@@ -261,6 +275,41 @@ unsigned short btchip_public_key_to_encoded_base58(
     return btchip_encode_base58(tmpBuffer, 24 + versionSize, out, outlen);
 }
 
+#ifdef HAVE_PART_SUPPORT
+unsigned short btchip_pk256_to_encoded_base58(
+    unsigned char WIDE *in, unsigned short inlen, unsigned char *out,
+    unsigned short outlen, unsigned short version,
+    unsigned char alreadyHashed) {
+    unsigned char tmpBuffer[38];
+    unsigned char checksumBuffer[32];
+    cx_sha256_t hash;
+    unsigned char versionSize = (version > 255 ? 2 : 1);
+
+    if (!alreadyHashed) {
+        L_DEBUG_BUF(("To hash\n", in, inlen));
+        cx_sha256_init(&hash);
+        cx_hash(&hash.header, CX_LAST, in, inlen, tmpBuffer + versionSize);
+        L_DEBUG_BUF(("Hash160\n", (tmpBuffer + versionSize), 32));
+        if (version > 255) {
+            tmpBuffer[0] = (version >> 8);
+            tmpBuffer[1] = version;
+        } else {
+            tmpBuffer[0] = version;
+        }
+    } else {
+        os_memmove(tmpBuffer, in, 32 + versionSize);
+    }
+
+    cx_sha256_init(&hash);
+    cx_hash(&hash.header, CX_LAST, tmpBuffer, 32 + versionSize, checksumBuffer);
+    cx_sha256_init(&hash);
+    cx_hash(&hash.header, CX_LAST, checksumBuffer, 32, checksumBuffer);
+
+    L_DEBUG_BUF(("Checksum\n", checksumBuffer, 4));
+    os_memmove(tmpBuffer + 32 + versionSize, checksumBuffer, 4);
+    return btchip_encode_base58(tmpBuffer, 36 + versionSize, out, outlen);
+}
+#endif
 void btchip_swap_bytes(unsigned char *target, unsigned char *source,
                        unsigned char size) {
     unsigned char i;

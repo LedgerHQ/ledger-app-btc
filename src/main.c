@@ -1990,7 +1990,7 @@ uint8_t prepare_single_output() {
     unsigned int offset = 0;
     unsigned char versionSize;
     int addressOffset;
-    unsigned char address[22];
+    unsigned char address[34];
     unsigned short version;
     unsigned short textSize;
     unsigned char nativeSegwit;
@@ -2000,6 +2000,53 @@ uint8_t prepare_single_output() {
     offset += 8;
     nativeSegwit = btchip_output_script_is_native_witness(
         btchip_context_D.currentOutput + offset);
+#ifdef HAVE_PART_SUPPORT
+    bool amountZero = true;
+    for (size_t k = 0; k < 8; ++k) {
+        if (amount[k] == 0)
+            continue;
+        amountZero = false;
+        break;
+    };
+    if (amountZero)
+    {
+        snprintf(vars.tmp.fullAddress, 65, "DATA %dB", btchip_context_D.currentOutput[offset]);
+    } else
+    if (btchip_output_script_is_coldstake(btchip_context_D.currentOutput +
+                                          offset))
+    {
+        version = btchip_context_D.payToAddressVersion;
+        versionSize = 1;
+        addressOffset = offset + 6;
+        address[0] = version;
+        os_memmove(address + versionSize,
+                   btchip_context_D.currentOutput + addressOffset, 20);
+
+        // Prepare address
+        textSize = btchip_public_key_to_encoded_base58(
+            address, 20 + versionSize, (unsigned char *)tmp, sizeof(tmp),
+            version, 1);
+        tmp[textSize] = '\0';
+        strcpy(vars.tmp.fullAddress, "STK ");
+        strncat(vars.tmp.fullAddress, tmp, 8);
+        strcat(vars.tmp.fullAddress, "~ / SPD ");
+
+        addressOffset += 26;
+        version = PART_PKADDR256_V;
+        address[0] = version;
+        os_memmove(address + versionSize,
+                   btchip_context_D.currentOutput + addressOffset, 32);
+
+        // Prepare address
+        textSize = btchip_pk256_to_encoded_base58(
+            address, 32 + versionSize, (unsigned char *)tmp, sizeof(tmp),
+            version, 1);
+        tmp[textSize] = '\0';
+
+        strncat(vars.tmp.fullAddress, tmp, 8);
+        strcat(vars.tmp.fullAddress, "~");
+    } else
+#endif
     if (btchip_output_script_is_op_return(btchip_context_D.currentOutput +
                                           offset)) {
         strcpy(vars.tmp.fullAddress, "OP_RETURN");

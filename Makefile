@@ -24,7 +24,7 @@ APP_PATH = ""
 # All but bitcoin app use dependency onto the bitcoin app/lib
 APP_LOAD_FLAGS=--appFlags 0x50 --dep Bitcoin
 DEFINES_LIB = USE_LIB_BITCOIN
-APP_LOAD_PARAMS= --curve secp256k1 $(COMMON_LOAD_PARAMS) 
+APP_LOAD_PARAMS= --curve secp256k1 $(COMMON_LOAD_PARAMS)
 
 APPVERSION_M=1
 APPVERSION_N=2
@@ -48,7 +48,7 @@ DEFINES   += COIN_P2PKH_VERSION=0 COIN_P2SH_VERSION=5 COIN_FAMILY=1 COIN_COINID=
 DEFINES_LIB=# we're not using the lib :)
 APPNAME ="Bitcoin"
 APP_LOAD_PARAMS += --path $(APP_PATH)
-#LIB and global pin and 
+#LIB and global pin and
 APP_LOAD_FLAGS=--appFlags 0x850
 else ifeq ($(COIN),bitcoin_cash)
 # Bitcoin cash
@@ -56,7 +56,7 @@ DEFINES   += COIN_P2PKH_VERSION=0 COIN_P2SH_VERSION=5 COIN_FAMILY=1 COIN_COINID=
 APPNAME ="Bitcoin Cash"
 APP_LOAD_PARAMS += --path $(APP_PATH)
 else ifeq ($(COIN),bitcoin_gold)
-# Bitcoin Gold 
+# Bitcoin Gold
 DEFINES   += COIN_P2PKH_VERSION=38 COIN_P2SH_VERSION=23 COIN_FAMILY=1 COIN_COINID=\"Bitcoin\\x20Gold\" COIN_COINID_HEADER=\"BITCOINGOLD\" COIN_COLOR_HDR=0x85bb65 COIN_COLOR_DB=0xc2ddb2 COIN_COINID_NAME=\"BitcoinGold\" COIN_COINID_SHORT=\"BTG\" COIN_KIND=COIN_KIND_BITCOIN_GOLD COIN_FLAGS=FLAG_SEGWIT_CHANGE_SUPPORT COIN_FORKID=79
 APPNAME ="Bitcoin Gold"
 APP_LOAD_PARAMS += --path $(APP_PATH)
@@ -91,7 +91,7 @@ DEFINES   += COIN_P2PKH_VERSION=60 COIN_P2SH_VERSION=85 COIN_FAMILY=1 COIN_COINI
 APPNAME ="Komodo"
 APP_LOAD_PARAMS += --path $(APP_PATH)
 else ifeq ($(COIN),stratis)
-# Stratis 
+# Stratis
 DEFINES   += COIN_P2PKH_VERSION=63 COIN_P2SH_VERSION=125 COIN_FAMILY=2 COIN_COINID=\"Stratis\" COIN_COINID_HEADER=\"STRAT\" COIN_COLOR_HDR=0x3790CA COIN_COLOR_DB=0x9BC8E5 COIN_COINID_NAME=\"Stratis\" COIN_COINID_SHORT=\"STRAT\" COIN_KIND=COIN_KIND_STRATIS COIN_FLAGS=FLAG_PEERCOIN_SUPPORT
 APPNAME ="Stratis"
 APP_LOAD_PARAMS += --path $(APP_PATH)
@@ -143,9 +143,23 @@ else ifeq ($(COIN),bitcoin_private)
 DEFINES   += COIN_P2PKH_VERSION=4901 COIN_P2SH_VERSION=5039 COIN_FAMILY=1 COIN_COINID=\"BPrivate\" COIN_COINID_HEADER=\"BPRIVATE\" COIN_COLOR_HDR=0x85bb65 COIN_COLOR_DB=0xc2ddb2 COIN_COINID_NAME=\"BPrivate\" COIN_COINID_SHORT=\"BTCP\" COIN_KIND=COIN_KIND_BITCOIN_PRIVATE COIN_FORKID=42
 APPNAME ="Bitcoin Private"
 APP_LOAD_PARAMS += --path $(APP_PATH)
+else ifeq ($(COIN),particl)
+# Particl mainnet
+DEFINES   += COIN_P2PKH_VERSION=56 COIN_P2SH_VERSION=60 COIN_FAMILY=1 COIN_COINID=\"Particl\" COIN_COINID_HEADER=\"PARTICL\" COIN_COLOR_HDR=0x02E8AF COIN_COLOR_DB=0x8DAE97 COIN_COINID_NAME=\"Particl\" COIN_COINID_SHORT=\"PART\" COIN_KIND=COIN_KIND_PARTICL HAVE_PART_SUPPORT SIGN_MSG_PREFIX=\"Bitcoin\" PART_PKADDR256_V=0x39
+APPNAME ="Particl"
+APP_LOAD_FLAGS=--appFlags 0x50
+DEFINES_LIB =
+APP_LOAD_PARAMS= --curve secp256k1 $(COMMON_LOAD_PARAMS) --path $(APP_PATH)
+else ifeq ($(COIN),particl_testnet)
+# Particl testnet
+DEFINES   += COIN_P2PKH_VERSION=118 COIN_P2SH_VERSION=122 COIN_FAMILY=1 COIN_COINID=\"ParticlTest\" COIN_COINID_HEADER=\"PARTICLTEST\" COIN_COLOR_HDR=0x66CCFF COIN_COLOR_DB=0x8DAE97 COIN_COINID_NAME=\"Particl_T\" COIN_COINID_SHORT=\"TPAR\" COIN_KIND=COIN_KIND_PARTICL HAVE_PART_SUPPORT SIGN_MSG_PREFIX=\"Bitcoin\" PART_PKADDR256_V=0x77
+APPNAME ="Particl Test"
+APP_LOAD_FLAGS=--appFlags 0x50
+DEFINES_LIB =
+APP_LOAD_PARAMS= --curve secp256k1 $(COMMON_LOAD_PARAMS) --path "44'/1'"
 else
 ifeq ($(filter clean,$(MAKECMDGOALS)),)
-$(error Unsupported COIN - use bitcoin_testnet, bitcoin, bitcoin_cash, bitcoin_gold, litecoin, dogecoin, dash, zcash, zencash, komodo, stratis, peercoin, posw, pivx, viacoin, vertcoin, stealthcoin, digibyte, qtum, hcash, bitcoin_private) 
+$(error Unsupported COIN - use bitcoin_testnet, bitcoin, bitcoin_cash, bitcoin_gold, litecoin, dogecoin, dash, zcash, zencash, komodo, stratis, peercoin, posw, pivx, viacoin, vertcoin, stealthcoin, digibyte, qtum, hcash, bitcoin_private, particl, particl_testnet)
 endif
 endif
 
@@ -197,7 +211,7 @@ ifeq ($(GCCPATH),)
 $(info GCCPATH is not set: arm-none-eabi-* will be used from PATH)
 endif
 
-CC       := $(CLANGPATH)clang 
+CC       := $(CLANGPATH)clang
 
 #CFLAGS   += -O0
 CFLAGS   += -O3 -Os
@@ -206,7 +220,7 @@ AS     := $(GCCPATH)arm-none-eabi-gcc
 
 LD       := $(GCCPATH)arm-none-eabi-gcc
 LDFLAGS  += -O3 -Os
-LDLIBS   += -lm -lgcc -lc 
+LDLIBS   += -lm -lgcc -lc
 
 # import rules to compile glyphs(/pone)
 include $(BOLOS_SDK)/Makefile.glyphs
@@ -217,9 +231,9 @@ SDK_SOURCE_PATH  += lib_stusb qrcode
 #use the SDK U2F+HIDGEN USB profile
 SDK_SOURCE_PATH  += lib_u2f lib_stusb_impl
 
-DEFINES   += USB_SEGMENT_SIZE=64 
+DEFINES   += USB_SEGMENT_SIZE=64
 DEFINES   += U2F_PROXY_MAGIC=\"BTC\"
-DEFINES   += HAVE_IO_U2F HAVE_U2F 
+DEFINES   += HAVE_IO_U2F HAVE_U2F
 #DEFINES   += BLE_SEGMENT_SIZE=20
 #DEFINES   += HAVE_USB_CLASS_CCID
 
