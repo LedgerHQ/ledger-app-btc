@@ -104,6 +104,11 @@ else ifeq ($(COIN),posw)
 DEFINES += COIN_P2PKH_VERSION=55 COIN_P2SH_VERSION=85 COIN_FAMILY=2 COIN_COINID=\"PoSWallet\" COIN_COINID_HEADER=\"POSW\" COIN_COLOR_HDR=0x23273D COIN_COLOR_DB=0x91939E COIN_COINID_NAME=\"PoSW\" COIN_COINID_SHORT=\"POSW\" COIN_KIND=COIN_KIND_POSW COIN_FLAGS=FLAG_PEERCOIN_SUPPORT
 APPNAME ="PoSW"
 APP_LOAD_PARAMS += --path $(APP_PATH)
+else ifeq ($(COIN),phore)
+# Phore
+DEFINES   += COIN_P2PKH_VERSION=55 COIN_P2SH_VERSION=13 COIN_FAMILY=1 COIN_COINID=\"Phore\" COIN_COINID_HEADER=\"PHR\" COIN_COLOR_HDR=0x00a064 COIN_COLOR_DB=0x00d988 COIN_COINID_NAME=\"Phore\" COIN_COINID_SHORT=\"PHR\" COIN_KIND=COIN_KIND_PHR
+APPNAME ="Phore"
+APP_LOAD_PARAMS += --path $(APP_PATH)
 else ifeq ($(COIN),pivx)
 # PivX
 DEFINES   += COIN_P2PKH_VERSION=30 COIN_P2SH_VERSION=13 COIN_FAMILY=1 COIN_COINID=\"DarkNet\" COIN_COINID_HEADER=\"PIVX\" COIN_COLOR_HDR=0x46385D COIN_COLOR_DB=0x9E96AA COIN_COINID_NAME=\"PivX\" COIN_COINID_SHORT=\"PIV\" COIN_KIND=COIN_KIND_PIVX
@@ -145,7 +150,7 @@ APPNAME ="Bitcoin Private"
 APP_LOAD_PARAMS += --path $(APP_PATH)
 else
 ifeq ($(filter clean,$(MAKECMDGOALS)),)
-$(error Unsupported COIN - use bitcoin_testnet, bitcoin, bitcoin_cash, bitcoin_gold, litecoin, dogecoin, dash, zcash, zencash, komodo, stratis, peercoin, posw, pivx, viacoin, vertcoin, stealthcoin, digibyte, qtum, hcash, bitcoin_private) 
+$(error Unsupported COIN - use bitcoin_testnet, bitcoin, bitcoin_cash, bitcoin_gold, litecoin, dogecoin, dash, zcash, zencash, komodo, stratis, peercoin, posw, pivx, phore, viacoin, vertcoin, stealthcoin, digibyte, qtum, hcash, bitcoin_private) 
 endif
 endif
 
