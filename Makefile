@@ -95,6 +95,11 @@ else ifeq ($(COIN),stratis)
 DEFINES   += COIN_P2PKH_VERSION=63 COIN_P2SH_VERSION=125 COIN_FAMILY=2 COIN_COINID=\"Stratis\" COIN_COINID_HEADER=\"STRATIS\" COIN_COLOR_HDR=0x3790CA COIN_COLOR_DB=0x9BC8E5 COIN_COINID_NAME=\"Stratis\" COIN_COINID_SHORT=\"STRAT\" COIN_KIND=COIN_KIND_STRATIS COIN_FLAGS=FLAG_PEERCOIN_SUPPORT
 APPNAME ="Stratis"
 APP_LOAD_PARAMS += --path $(APP_PATH)
+else ifeq ($(COIN),obsidian)
+# Obsidian 
+DEFINES   += COIN_P2PKH_VERSION=75 COIN_P2SH_VERSION=125 COIN_FAMILY=2 COIN_COINID=\"Obsidian\" COIN_COINID_HEADER=\"OBSIDIAN\" COIN_COLOR_HDR=0x339999 COIN_COLOR_DB=0x1fba81 COIN_COINID_NAME=\"Obsidian\" COIN_COINID_SHORT=\"ODN\" COIN_KIND=COIN_KIND_OBSIDIAN COIN_FLAGS=FLAG_PEERCOIN_SUPPORT
+APPNAME ="Obsidian"
+APP_LOAD_PARAMS += --path $(APP_PATH)
 else ifeq ($(COIN),peercoin)
 # Peercoin
 DEFINES += COIN_P2PKH_VERSION=55 COIN_P2SH_VERSION=117 COIN_FAMILY=2 COIN_COINID=\"PPCoin\" COIN_COINID_HEADER=\"PEERCOIN\" COIN_COLOR_HDR=0x3790CA COIN_COLOR_DB=0x9BC8E5 COIN_COINID_NAME=\"Peercoin\" COIN_COINID_SHORT=\"PPC\" COIN_KIND=COIN_KIND_PEERCOIN COIN_FLAGS=FLAG_PEERCOIN_UNITS\|FLAG_PEERCOIN_SUPPORT
@@ -145,7 +150,7 @@ APPNAME ="Bitcoin Private"
 APP_LOAD_PARAMS += --path $(APP_PATH)
 else
 ifeq ($(filter clean,$(MAKECMDGOALS)),)
-$(error Unsupported COIN - use bitcoin_testnet, bitcoin, bitcoin_cash, bitcoin_gold, litecoin, dogecoin, dash, zcash, zencash, komodo, stratis, peercoin, posw, pivx, viacoin, vertcoin, stealthcoin, digibyte, qtum, hcash, bitcoin_private) 
+$(error Unsupported COIN - use bitcoin_testnet, bitcoin, bitcoin_cash, bitcoin_gold, litecoin, dogecoin, dash, zcash, zencash, komodo, stratis, obsidian,peercoin, posw, pivx, viacoin, vertcoin, stealthcoin, digibyte, qtum, hcash, bitcoin_private) 
 endif
 endif
 
