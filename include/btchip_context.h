@@ -1,5 +1,5 @@
 /*******************************************************************************
-*   Ledger Blue - Bitcoin Wallet
+*   Ledger Blue - Counoscoin Wallet
 *   (c) 2016 Ledger
 *
 *  Licensed under the Apache License, Version 2.0 (the "License");
@@ -234,7 +234,7 @@ typedef struct btchip_context_s btchip_context_t;
 
 
 /**
- * Structure to configure the bitcoin application for a given altcoin
+ * Structure to configure the counoscoin application for a given altcoin
  * 
  */
 typedef enum btchip_coin_flags_e {
@@ -245,10 +245,10 @@ typedef enum btchip_coin_flags_e {
 
 
 typedef enum btchip_coin_kind_e {
-    COIN_KIND_BITCOIN_TESTNET,
-    COIN_KIND_BITCOIN,
-    COIN_KIND_BITCOIN_CASH,
-    COIN_KIND_BITCOIN_GOLD,
+    COIN_KIND_COUNOSCOIN_TESTNET,
+    COIN_KIND_COUNOSCOIN,
+    COIN_KIND_COUNOSCOIN_CASH,
+    COIN_KIND_COUNOSCOIN_GOLD,
     COIN_KIND_LITECOIN,
     COIN_KIND_DOGE,
     COIN_KIND_DASH,
@@ -265,7 +265,7 @@ typedef enum btchip_coin_kind_e {
     COIN_KIND_DIGIBYTE,
     COIN_KIND_QTUM,
     COIN_KIND_HCASH,
-    COIN_KIND_BITCOIN_PRIVATE,
+    COIN_KIND_COUNOSCOIN_PRIVATE,
     COIN_KIND_ZENCASH,
     COIN_KIND_ZCOIN
 } btchip_coin_kind_t;

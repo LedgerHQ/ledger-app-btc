@@ -1,5 +1,5 @@
 /*******************************************************************************
-*   Ledger Blue - Bitcoin Wallet
+*   Ledger Blue - Counoscoin Wallet
 *   (c) 2016 Ledger
 *
 *  Licensed under the Apache License, Version 2.0 (the "License");
@@ -51,7 +51,7 @@ unsigned short btchip_apdu_set_alternate_coin_version() {
     }
 
     switch (G_io_apdu_buffer[offset + 4]) {
-    case BTCHIP_FAMILY_BITCOIN:
+    case BTCHIP_FAMILY_COUNOSCOIN:
         break;
     case BTCHIP_FAMILY_PEERCOIN:
         if (!(G_coin_config->flags & FLAG_PEERCOIN_SUPPORT)) {

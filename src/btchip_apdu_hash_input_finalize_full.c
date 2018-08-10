@@ -1,5 +1,5 @@
 /*******************************************************************************
-*   Ledger Blue - Bitcoin Wallet
+*   Ledger Blue - Counoscoin Wallet
 *   (c) 2016 Ledger
 *
 *  Licensed under the Apache License, Version 2.0 (the "License");
@@ -100,7 +100,7 @@ static bool check_output_displayable() {
                 if (G_coin_config->flags & FLAG_SEGWIT_CHANGE_SUPPORT) {
                     changeFound = true;
                 } else {
-                    // Attempt to avoid fatal failures on Bitcoin Cash
+                    // Attempt to avoid fatal failures on Counoscoin Cash
                     PRINTF("Error : Non spendable Segwit change");
                     THROW(EXCEPTION);
                 }

@@ -81,7 +81,7 @@ static int convert_bits(uint8_t *out, size_t *outlen, int outbits,
 
 void create_checksum(uint8_t *payload, size_t payload_length,
                      uint8_t *checksum) {
-    uint8_t *prefix = (uint8_t *)"bitcoincash";
+    uint8_t *prefix = (uint8_t *)"counoscoincash";
     uint64_t mod = PolyMod(prefix, payload, payload_length);
 
     for (size_t i = 0; i < 8; ++i) {
@@ -121,7 +121,7 @@ int cashaddr_encode(uint8_t *hash, const size_t hash_length, uint8_t *addr,
     convert_bits(payload, &payload_length, 5, tmp, hash_length + 1, 8, 1);
 
     create_checksum(payload, payload_length,
-                    checksum); // Assume prefix is 'bitcoincash'
+                    checksum); // Assume prefix is 'counoscoincash'
 
     for (i = 0; i < payload_length; ++i) {
         if (*payload >> 5) {

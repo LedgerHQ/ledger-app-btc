@@ -1,5 +1,5 @@
 /*******************************************************************************
- *   Ledger Blue - Bitcoin Wallet
+ *   Ledger Blue - Counoscoin Wallet
  *   (c) 2016 Ledger
  *
  *  Licensed under the Apache License, Version 2.0 (the "License");
@@ -42,8 +42,8 @@ unsigned char G_io_seproxyhal_spi_buffer[IO_SEPROXYHAL_BUFFER_SIZE_B];
 #define MAX_CHAR_PER_LINE 25
 
 #define COLOR_BG_1 0xF9F9F9
-#define COLOR_APP COIN_COLOR_HDR      // bitcoin 0xFCB653
-#define COLOR_APP_LIGHT COIN_COLOR_DB // bitcoin 0xFEDBA9
+#define COLOR_APP COIN_COLOR_HDR      // counoscoin 0xFCB653
+#define COLOR_APP_LIGHT COIN_COLOR_DB // counoscoin 0xFEDBA9
 
 #if defined(TARGET_BLUE)
 #include "qrcodegen.h"
@@ -2497,9 +2497,9 @@ btchip_altcoin_config_t const C_coin_config = {
 };
 
 __attribute__((section(".boot"))) int main(int arg0) {
-#ifdef USE_LIB_BITCOIN
+#ifdef USE_LIB_COUNOSCOIN
     // in RAM allocation (on stack), to allow simple simple traversal into the
-    // bitcoin app (separate NVRAM zone)
+    // counoscoin app (separate NVRAM zone)
     unsigned int libcall_params[3];
     unsigned char coinid[sizeof(COIN_COINID)];
     strcpy(coinid, COIN_COINID);
@@ -2532,8 +2532,8 @@ __attribute__((section(".boot"))) int main(int arg0) {
         TRY {
             // ensure syscall will accept us
             check_api_level(CX_COMPAT_APILEVEL);
-            // delegate to bitcoin app/lib
-            libcall_params[0] = "Bitcoin";
+            // delegate to counoscoin app/lib
+            libcall_params[0] = "Counoscoin";
             libcall_params[1] = 0x100; // use the Init call, as we won't exit
             libcall_params[2] = &coin_config;
             os_lib_call(&libcall_params);
@@ -2601,6 +2601,6 @@ __attribute__((section(".boot"))) int main(int arg0) {
         END_TRY;
     }
     app_exit();
-#endif // USE_LIB_BITCOIN
+#endif // USE_LIB_COUNOSCOIN
     return 0;
 }

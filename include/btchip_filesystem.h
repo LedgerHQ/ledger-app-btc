@@ -1,5 +1,5 @@
 /*******************************************************************************
-*   Ledger Blue - Bitcoin Wallet
+*   Ledger Blue - Counoscoin Wallet
 *   (c) 2016 Ledger
 *
 *  Licensed under the Apache License, Version 2.0 (the "License");
@@ -32,7 +32,7 @@ enum btchip_supported_modes_e {
 };
 
 enum btchip_family_e {
-    BTCHIP_FAMILY_BITCOIN = 0x01,
+    BTCHIP_FAMILY_COUNOSCOIN = 0x01,
     BTCHIP_FAMILY_PEERCOIN = 0x02,
     BTCHIP_FAMILY_QTUM = 0x03,
 };

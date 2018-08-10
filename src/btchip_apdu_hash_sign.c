@@ -1,5 +1,5 @@
 /*******************************************************************************
-*   Ledger Blue - Bitcoin Wallet
+*   Ledger Blue - Counoscoin Wallet
 *   (c) 2016 Ledger
 *
 *  Licensed under the Apache License, Version 2.0 (the "License");
@@ -86,8 +86,8 @@ unsigned short btchip_apdu_hash_sign() {
 
             if (((N_btchip.bkp.config.options &
                   BTCHIP_OPTION_FREE_SIGHASHTYPE) == 0)) {
-                // if bitcoin cash OR forkid is set, then use the fork id
-                if (G_coin_config->kind == COIN_KIND_BITCOIN_CASH ||
+                // if counoscoin cash OR forkid is set, then use the fork id
+                if (G_coin_config->kind == COIN_KIND_COUNOSCOIN_CASH ||
                     G_coin_config->forkid) {
 #define SIGHASH_FORKID 0x40
                     if (sighashType != (SIGHASH_ALL | SIGHASH_FORKID)) {
