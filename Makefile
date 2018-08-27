@@ -147,9 +147,14 @@ else ifeq ($(COIN),bitcoin_private)
 DEFINES   += COIN_P2PKH_VERSION=4901 COIN_P2SH_VERSION=5039 COIN_FAMILY=1 COIN_COINID=\"BPrivate\" COIN_COINID_HEADER=\"BITCOINPRIVATE\" COIN_COLOR_HDR=0x85bb65 COIN_COLOR_DB=0xc2ddb2 COIN_COINID_NAME=\"BPrivate\" COIN_COINID_SHORT=\"BTCP\" COIN_KIND=COIN_KIND_BITCOIN_PRIVATE COIN_FORKID=42
 APPNAME ="Bitcoin Private"
 APP_LOAD_PARAMS += --path $(APP_PATH)
+else ifeq ($(COIN),feathercoin)
+# Feathercoin
+DEFINES   += COIN_P2PKH_VERSION=14 COIN_P2SH_VERSION=5 COIN_FAMILY=1 COIN_COINID=\"Feathercoin\" COIN_COINID_HEADER=\"FEATHERCOIN\" COIN_COLOR_HDR=0x2A3C5E COIN_COLOR_DB=0x5079c2 COIN_COINID_NAME=\"Feathercoin\" COIN_COINID_SHORT=\"FTC\" COIN_KIND=COIN_KIND_FEATHERCOIN COIN_FLAGS=FLAG_SEGWIT_CHANGE_SUPPORT
+APPNAME ="Feathercoin"
+APP_LOAD_PARAMS += --path $(APP_PATH)
 else
 ifeq ($(filter clean,$(MAKECMDGOALS)),)
-$(error Unsupported COIN - use bitcoin_testnet, bitcoin, bitcoin_cash, bitcoin_gold, litecoin, dogecoin, dash, zcash, zencash, komodo, stratis, peercoin, posw, pivx, viacoin, vertcoin, stealth, digibyte, qtum, hcash, bitcoin_private) 
+$(error Unsupported COIN - use bitcoin_testnet, bitcoin, bitcoin_cash, bitcoin_gold, litecoin, dogecoin, dash, zcash, zencash, komodo, stratis, peercoin, posw, pivx, viacoin, vertcoin, stealth, digibyte, qtum, hcash, bitcoin_private, feathercoin) 
 endif
 endif
 
