@@ -147,9 +147,14 @@ else ifeq ($(COIN),bitcoin_private)
 DEFINES   += COIN_P2PKH_VERSION=4901 COIN_P2SH_VERSION=5039 COIN_FAMILY=1 COIN_COINID=\"BPrivate\" COIN_COINID_HEADER=\"BITCOINPRIVATE\" COIN_COLOR_HDR=0x85bb65 COIN_COLOR_DB=0xc2ddb2 COIN_COINID_NAME=\"BPrivate\" COIN_COINID_SHORT=\"BTCP\" COIN_KIND=COIN_KIND_BITCOIN_PRIVATE COIN_FORKID=42
 APPNAME ="Bitcoin Private"
 APP_LOAD_PARAMS += --path $(APP_PATH)
+else ifeq ($(COIN),machinecoin)
+# Machinecoin
+DEFINES   += COIN_P2PKH_VERSION=50 COIN_P2SH_VERSION=20 COIN_FAMILY=1 COIN_COINID=\"Machinecoin\" COIN_COINID_HEADER=\"MACHINECOIN\" COIN_COLOR_HDR=0x4d4d4d COIN_COLOR_DB=0x8c8c8c COIN_COINID_NAME=\"Machinecoin\" COIN_COINID_SHORT=\"MAC\" COIN_NATIVE_SEGWIT_PREFIX=\"mc\" COIN_KIND=COIN_KIND_MACHINECOIN COIN_FLAGS=FLAG_SEGWIT_CHANGE_SUPPORT
+APPNAME ="Machinecoin"
+APP_LOAD_PARAMS += --path $(APP_PATH)
 else
 ifeq ($(filter clean,$(MAKECMDGOALS)),)
-$(error Unsupported COIN - use bitcoin_testnet, bitcoin, bitcoin_cash, bitcoin_gold, litecoin, dogecoin, dash, zcash, horizen, komodo, stratis, peercoin, posw, pivx, viacoin, vertcoin, stealth, digibyte, qtum, hcash, bitcoin_private, zcoin) 
+$(error Unsupported COIN - use bitcoin_testnet, bitcoin, bitcoin_cash, bitcoin_gold, litecoin, dogecoin, dash, zcash, zencash, komodo, stratis, peercoin, posw, pivx, viacoin, vertcoin, stealth, digibyte, qtum, hcash, bitcoin_private, zcoin, machinecoin) 
 endif
 endif
 
