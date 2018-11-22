@@ -55,6 +55,11 @@ else ifeq ($(COIN),bitcoin_cash)
 DEFINES   += COIN_P2PKH_VERSION=0 COIN_P2SH_VERSION=5 COIN_FAMILY=1 COIN_COINID=\"Bitcoin\" COIN_COINID_HEADER=\"BITCOINCASH\" COIN_COLOR_HDR=0x85bb65 COIN_COLOR_DB=0xc2ddb2 COIN_COINID_NAME=\"BitcoinCash\" COIN_COINID_SHORT=\"BCH\" COIN_KIND=COIN_KIND_BITCOIN_CASH COIN_FORKID=0
 APPNAME ="Bitcoin Cash"
 APP_LOAD_PARAMS += --path $(APP_PATH)
+else ifeq ($(COIN),bitcore)
+# Bitcore
+DEFINES   += COIN_P2PKH_VERSION=3 COIN_P2SH_VERSION=125 COIN_FAMILY=1 COIN_COINID=\"Bitcore\" COIN_COINID_HEADER=\"BITCORE\" COIN_COLOR_HDR=0xC831A7 COIN_COLOR_DB=0xce774ce COIN_COINID_NAME=\"Bitcore\" COIN_COINID_SHORT=\"BTX\" COIN_KIND=COIN_KIND_BITCORE COIN_FORKID=0 COIN_FLAGS=FLAG_SEGWIT_CHANGE_SUPPORT
+APPNAME ="Bitcore"
+APP_LOAD_PARAMS += --path $(APP_PATH)
 else ifeq ($(COIN),bitcoin_gold)
 # Bitcoin Gold 
 DEFINES   += COIN_P2PKH_VERSION=38 COIN_P2SH_VERSION=23 COIN_FAMILY=1 COIN_COINID=\"Bitcoin\\x20Gold\" COIN_COINID_HEADER=\"BITCOINGOLD\" COIN_COLOR_HDR=0x85bb65 COIN_COLOR_DB=0xc2ddb2 COIN_COINID_NAME=\"BitcoinGold\" COIN_COINID_SHORT=\"BTG\" COIN_KIND=COIN_KIND_BITCOIN_GOLD COIN_FLAGS=FLAG_SEGWIT_CHANGE_SUPPORT COIN_FORKID=79
@@ -154,7 +159,7 @@ APPNAME ="GameCredits"
 APP_LOAD_PARAMS += --path $(APP_PATH)
 else
 ifeq ($(filter clean,$(MAKECMDGOALS)),)
-$(error Unsupported COIN - use bitcoin_testnet, bitcoin, bitcoin_cash, bitcoin_gold, litecoin, dogecoin, dash, zcash, horizen, komodo, stratis, peercoin, posw, pivx, viacoin, vertcoin, stealth, digibyte, qtum, hcash, bitcoin_private, zcoin, gamecredits) 
+$(error Unsupported COIN - use bitcoin_testnet, bitcoin, bitcoin_cash, bitcoin_gold, litecoin, dogecoin, dash, zcash, horizen, komodo, stratis, peercoin, posw, pivx, viacoin, vertcoin, stealth, digibyte, qtum, hcash, bitcoin_private, zcoin, 
 endif
 endif
 
