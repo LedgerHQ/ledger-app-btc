@@ -36,6 +36,35 @@ ifndef COIN
 COIN=bitcoin
 endif
 
+COIN_VARIANTS = \
+	bitcoin_testnet \
+	bitcoin \
+	bitcoin_cash \
+	bitcoin_gold \
+	litecoin \
+	dogecoin \
+	dash \
+	zcash \
+	horizen \
+	komodo \
+	stratis \
+	peercoin \
+	posw \
+	pivx \
+	viacoin \
+	vertcoin \
+	stealth \
+	digibyte \
+	qtum \
+	hcash \
+	bitcoin_private \
+	zcoin \
+	gamecredits \
+	zclassic \
+	xsn \
+	nix \
+	energi
+
 ifeq ($(COIN),bitcoin_testnet)
 # Bitcoin testnet
 DEFINES   += COIN_P2PKH_VERSION=111 COIN_P2SH_VERSION=196 COIN_FAMILY=1 COIN_COINID=\"Bitcoin\" COIN_COINID_HEADER=\"BITCOIN\" COIN_COLOR_HDR=0xFCB653 COIN_COLOR_DB=0xFEDBA9 COIN_COINID_NAME=\"Bitcoin\" COIN_COINID_SHORT=\"TEST\" COIN_NATIVE_SEGWIT_PREFIX=\"tb\" COIN_KIND=COIN_KIND_BITCOIN_TESTNET COIN_FLAGS=FLAG_SEGWIT_CHANGE_SUPPORT
@@ -167,9 +196,14 @@ else ifeq ($(COIN),nix)
 DEFINES   += COIN_P2PKH_VERSION=38 COIN_P2SH_VERSION=53 COIN_FAMILY=1 COIN_COINID=\"NIX\" COIN_COINID_HEADER=\"NIX\" COIN_COLOR_HDR=0x1685e8 COIN_COLOR_DB=0xffffff COIN_COINID_NAME=\"NIX\" COIN_COINID_SHORT=\"NIX\" COIN_KIND=COIN_KIND_NIX
 APPNAME ="NIX"
 APP_LOAD_PARAMS += --path $(APP_PATH)
+else ifeq ($(COIN),energi)
+# Energi
+DEFINES   += COIN_P2PKH_VERSION=33 COIN_P2SH_VERSION=53 COIN_FAMILY=1 COIN_COINID=\"DarkCoin\" COIN_COINID_HEADER=\"ENERGI\" COIN_COLOR_HDR=0x0bc98d COIN_COLOR_DB=0xffffff COIN_COINID_NAME=\"Energi\" COIN_COINID_SHORT=\"ENERGI\" COIN_KIND=COIN_KIND_ENERGI
+APPNAME ="Energi"
+APP_LOAD_PARAMS += --path $(APP_PATH)
 else
 ifeq ($(filter clean,$(MAKECMDGOALS)),)
-$(error Unsupported COIN - use bitcoin_testnet, bitcoin, bitcoin_cash, bitcoin_gold, litecoin, dogecoin, dash, zcash, horizen, komodo, stratis, peercoin, posw, pivx, viacoin, vertcoin, stealth, digibyte, qtum, hcash, bitcoin_private, zcoin, gamecredits, zclassic, xsn, nix) 
+$(error Unsupported COIN - use: $(COIN_VARIANTS))
 endif
 endif
 
@@ -258,4 +292,4 @@ include $(BOLOS_SDK)/Makefile.rules
 dep/%.d: %.c Makefile
 
 listvariants:
-	@echo VARIANTS COIN bitcoin_testnet bitcoin bitcoin_cash bitcoin_gold litecoin dogecoin dash zcash horizen komodo stratis peercoin posw pivx viacoin vertcoin stealth digibyte qtum hcash bitcoin_private zcoin gamecredits zclassic xsn nix
+	@echo VARIANTS COIN $(COIN_VARIANTS)
