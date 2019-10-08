@@ -276,6 +276,7 @@ typedef enum btchip_coin_kind_e {
     COIN_KIND_ZCASH,
     COIN_KIND_KOMODO,
     COIN_KIND_RFU,
+    COIN_KIND_MONETARYUNIT,
     COIN_KIND_STRATIS,
     COIN_KIND_PEERCOIN,
     COIN_KIND_PIVX,
