@@ -138,6 +138,11 @@ else ifeq ($(COIN),bitcoin_private)
 DEFINES   += COIN_P2PKH_VERSION=4901 COIN_P2SH_VERSION=5039 COIN_FAMILY=1 COIN_COINID=\"BPrivate\" COIN_COINID_HEADER=\"BITCOINPRIVATE\" COIN_COLOR_HDR=0x85bb65 COIN_COLOR_DB=0xc2ddb2 COIN_COINID_NAME=\"BPrivate\" COIN_COINID_SHORT=\"BTCP\" COIN_KIND=COIN_KIND_BITCOIN_PRIVATE COIN_FORKID=42
 APPNAME ="Bitcoin Private"
 APP_LOAD_PARAMS += --path $(APP_PATH)
+else ifeq ($(COIN),bitcoin_rhodium)
+# Bitcoin Rhodium
+DEFINES   += COIN_P2PKH_VERSION=61 COIN_P2SH_VERSION=123 COIN_FAMILY=1 COIN_COINID=\"BRhodium\" COIN_COINID_HEADER=\"BITCOINRHODIUM\" COIN_COLOR_HDR=0xFF9900 COIN_COLOR_DB=0xFEEBCE COIN_COINID_NAME=\"BRhodium\" COIN_COINID_SHORT=\"XRC\" COIN_KIND=COIN_KIND_BITCOIN_RHODIUM
+APPNAME ="Bitcoin Rhodium"
+APP_LOAD_PARAMS += --path $(APP_PATH)
 else ifeq ($(COIN),gamecredits)
 # GameCredits
 DEFINES   += COIN_P2PKH_VERSION=38 COIN_P2SH_VERSION=62 COIN_FAMILY=1 COIN_COINID=\"GameCredits\" COIN_COINID_HEADER=\"GAMECREDITS\" COIN_COLOR_HDR=0x98C01F COIN_COLOR_DB=0xA1A2A7 COIN_COINID_NAME=\"GameCredits\" COIN_COINID_SHORT=\"GAME\" COIN_KIND=COIN_KIND_GAMECREDITS COIN_FLAGS=FLAG_SEGWIT_CHANGE_SUPPORT
@@ -160,7 +165,7 @@ APPNAME ="NIX"
 APP_LOAD_PARAMS += --path $(APP_PATH)
 else
 ifeq ($(filter clean,$(MAKECMDGOALS)),)
-$(error Unsupported COIN - use bitcoin_testnet, bitcoin, bitcoin_cash, bitcoin_gold, litecoin, dogecoin, dash, zcash, horizen, komodo, stratis, peercoin, pivx, viacoin, vertcoin, stealth, digibyte, qtum, bitcoin_private, zcoin, gamecredits, zclassic, xsn, nix)
+$(error Unsupported COIN - use bitcoin_testnet, bitcoin, bitcoin_cash, bitcoin_gold, litecoin, dogecoin, dash, zcash, horizen, komodo, stratis, peercoin, pivx, viacoin, vertcoin, stealth, digibyte, qtum, bitcoin_private, bitcoin_rhodium, zcoin, gamecredits, zclassic, xsn, nix)
 endif
 endif
 
@@ -286,4 +291,4 @@ include $(BOLOS_SDK)/Makefile.rules
 dep/%.d: %.c Makefile
 
 listvariants:
-	@echo VARIANTS COIN bitcoin_testnet bitcoin bitcoin_cash bitcoin_gold litecoin dogecoin dash zcash horizen komodo stratis peercoin pivx viacoin vertcoin stealth digibyte qtum bitcoin_private zcoin gamecredits zclassic xsn nix
+	@echo VARIANTS COIN bitcoin_testnet bitcoin bitcoin_cash bitcoin_gold litecoin dogecoin dash zcash horizen komodo stratis peercoin pivx viacoin vertcoin stealth digibyte qtum bitcoin_private bitcoin_rhodium zcoin gamecredits zclassic xsn nix
