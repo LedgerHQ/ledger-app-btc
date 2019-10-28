@@ -27,6 +27,7 @@
 
 #include "segwit_addr.h"
 #include "cashaddr.h"
+#include "multichainaddr.h"
 
 #include "glyphs.h"
 
@@ -2103,6 +2104,13 @@ uint8_t prepare_single_output() {
                     (version == btchip_context_D.payToScriptHashVersion
                          ? CASHADDR_P2SH
                          : CASHADDR_P2PKH));
+            } else if (G_coin_config->flags & FLAG_MULTICHAIN) {
+                textSize = multichainaddr_encode(
+                    address + versionSize, 20, (unsigned char *)tmp,
+                    sizeof(tmp), (version == btchip_context_D.payToScriptHashVersion
+                    ? G_coin_config->mc_p2sh_version
+                    : G_coin_config->mc_p2pkh_version), G_coin_config->mc_addr_checksum, 1);
+                tmp[textSize] = '\0';
             } else {
                 textSize = btchip_public_key_to_encoded_base58(
                     address, 20 + versionSize, (unsigned char *)tmp,
@@ -2355,7 +2363,14 @@ uint8_t prepare_full_output(uint8_t checkOnly) {
                                          btchip_context_D.payToScriptHashVersion
                                      ? CASHADDR_P2SH
                                      : CASHADDR_P2PKH));
-                        } else {
+                        } else if (G_coin_config->flags & FLAG_MULTICHAIN) {
+                            textSize = multichainaddr_encode(
+                                address + versionSize, 20, (unsigned char *)tmp,
+                                sizeof(tmp), (version == btchip_context_D.payToScriptHashVersion
+                                ? G_coin_config->mc_p2sh_version
+                                : G_coin_config->mc_p2pkh_version), G_coin_config->mc_addr_checksum, 1);
+                            tmp[textSize] = '\0';
+                         } else {
                             textSize = btchip_public_key_to_encoded_base58(
                                 address, 20 + versionSize, (unsigned char *)tmp,
                                 sizeof(tmp), version, 1);
@@ -2620,6 +2635,11 @@ btchip_altcoin_config_t const C_coin_config = {
 #ifdef COIN_FORKID
     .forkid = COIN_FORKID,
 #endif // COIN_FORKID
+#ifdef MC_COIN_ADDR_CHECKSUM
+    .mc_addr_checksum = MC_COIN_ADDR_CHECKSUM,
+    .mc_p2pkh_version = MC_COIN_P2PKH_VERSION,
+    .mc_p2sh_version = MC_COIN_P2SH_VERSION,
+#endif // COIN_ADDR_CHECKSUM
 #ifdef COIN_FLAGS
     .flags = COIN_FLAGS,
 #endif // COIN_FLAGS

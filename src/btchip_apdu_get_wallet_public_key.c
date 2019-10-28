@@ -22,6 +22,7 @@
 
 #include "segwit_addr.h"
 #include "cashaddr.h"
+#include "multichainaddr.h"
 
 #define P1_NO_DISPLAY 0x00
 #define P1_DISPLAY 0x01
@@ -121,6 +122,16 @@ unsigned short btchip_apdu_get_wallet_public_key() {
                                   tmp);
         keyLength =
             cashaddr_encode(tmp, 20, G_io_apdu_buffer + 67, 50, CASHADDR_P2PKH);
+    } else if (G_coin_config->flags & FLAG_MULTICHAIN) {
+        keyLength = multichainaddr_encode(
+            G_io_apdu_buffer + 1,            // IN
+            keyLength,                       // INLEN
+            G_io_apdu_buffer + 67,           // OUT
+            150,                             // MAXOUTLEN
+            G_coin_config->mc_p2pkh_version, // VERSION
+            G_coin_config->mc_addr_checksum, // CHECKSUM
+            0                                // alreadyHashed
+        );
     } else if (!(segwit || nativeSegwit)) {
         keyLength = btchip_public_key_to_encoded_base58(
             G_io_apdu_buffer + 1,  // IN

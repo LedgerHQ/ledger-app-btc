@@ -261,7 +261,8 @@ typedef struct btchip_context_s btchip_context_t;
 typedef enum btchip_coin_flags_e {
     FLAG_PEERCOIN_UNITS=1,
     FLAG_PEERCOIN_SUPPORT=2,
-    FLAG_SEGWIT_CHANGE_SUPPORT=4
+    FLAG_SEGWIT_CHANGE_SUPPORT=4,
+    FLAG_MULTICHAIN=8
 } btchip_coin_flags_t;
 
 
@@ -289,6 +290,7 @@ typedef enum btchip_coin_kind_e {
     COIN_KIND_GAMECREDITS,
     COIN_KIND_ZCOIN, 
     COIN_KIND_ZCLASSIC,
+    COIN_KIND_FOOTBALLCOIN,
     COIN_KIND_XSN,
     COIN_KIND_NIX
 } btchip_coin_kind_t;
@@ -310,6 +312,10 @@ typedef struct btchip_altcoin_config_s {
     unsigned int forkid;
     btchip_coin_kind_t kind;
     unsigned int flags;
+
+    unsigned int mc_p2pkh_version;
+    unsigned int mc_p2sh_version;
+    unsigned int mc_addr_checksum;
 } btchip_altcoin_config_t;
 
 void btchip_context_init(void);
