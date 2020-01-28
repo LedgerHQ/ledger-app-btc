@@ -274,6 +274,7 @@ typedef enum btchip_coin_kind_e {
     COIN_KIND_DOGE,
     COIN_KIND_DASH,
     COIN_KIND_ZCASH,
+    COIN_KIND_RESISTANCE,
     COIN_KIND_KOMODO,
     COIN_KIND_RFU,
     COIN_KIND_STRATIS,
@@ -291,8 +292,7 @@ typedef enum btchip_coin_kind_e {
     COIN_KIND_ZCLASSIC,
     COIN_KIND_XSN,
     COIN_KIND_NIX,
-    COIN_KIND_LBRY,
-    COIN_KIND_RESISTANCE
+    COIN_KIND_LBRY
 } btchip_coin_kind_t;
 
 typedef struct btchip_altcoin_config_s {
