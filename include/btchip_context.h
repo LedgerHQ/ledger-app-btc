@@ -292,7 +292,8 @@ typedef enum btchip_coin_kind_e {
     COIN_KIND_XSN,
     COIN_KIND_NIX,
     COIN_KIND_LBRY,
-    COIN_KIND_RESISTANCE
+    COIN_KIND_RESISTANCE,
+    COIN_KIND_TERRACOIN
 } btchip_coin_kind_t;
 
 typedef struct btchip_altcoin_config_s {

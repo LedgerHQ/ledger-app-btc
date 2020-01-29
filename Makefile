@@ -170,9 +170,14 @@ else ifeq ($(COIN),resistance)
 DEFINES   += COIN_P2PKH_VERSION=7063 COIN_P2SH_VERSION=7068 COIN_FAMILY=1 COIN_COINID=\"Res\" COIN_COINID_HEADER=\"RES\" COIN_COLOR_HDR=0x3790CA COIN_COLOR_DB=0x9BC8E5 COIN_COINID_NAME=\"Res\" COIN_COINID_SHORT=\"RES\" COIN_KIND=COIN_KIND_RESISTANCE
 APPNAME ="Resistance"
 APP_LOAD_PARAMS += --path $(APP_PATH)
+else ifeq ($(COIN),terracoin)
+# Terracoin
+DEFINES   += COIN_P2PKH_VERSION=0 COIN_P2SH_VERSION=5 COIN_FAMILY=1 COIN_COINID=\"DarkCoin\" COIN_COINID_HEADER=\"TERRACOIN\" COIN_COLOR_HDR=0x0E8843 COIN_COLOR_DB=0xA5DDAD COIN_COINID_NAME=\"Terracoin\" COIN_COINID_SHORT=\"TRC\" COIN_KIND=COIN_KIND_TERRACOIN
+APPNAME ="Terracoin"
+APP_LOAD_PARAMS += --path $(APP_PATH)
 else
 ifeq ($(filter clean,$(MAKECMDGOALS)),)
-$(error Unsupported COIN - use bitcoin_testnet, bitcoin, bitcoin_cash, bitcoin_gold, litecoin, dogecoin, dash, zcash, horizen, komodo, stratis, peercoin, pivx, viacoin, vertcoin, stealth, digibyte, qtum, bitcoin_private, zcoin, gamecredits, zclassic, xsn, nix, lbry, resistance)
+$(error Unsupported COIN - use bitcoin_testnet, bitcoin, bitcoin_cash, bitcoin_gold, litecoin, dogecoin, dash, zcash, horizen, komodo, stratis, peercoin, pivx, viacoin, vertcoin, stealth, digibyte, qtum, bitcoin_private, zcoin, gamecredits, zclassic, xsn, nix, lbry, resistance, terracoin)
 endif
 endif
 
@@ -315,11 +320,11 @@ dep/%.d: %.c Makefile
 ifeq ($(TARGET_NAME),TARGET_NANOX)
 
 listvariants:
-	@echo VARIANTS COIN bitcoin_testnet bitcoin bitcoin_cash bitcoin_gold litecoin dogecoin dash zcash horizen komodo stratis peercoin pivx viacoin vertcoin stealth digibyte qtum bitcoin_private zcoin gamecredits zclassic xsn nix lbry
+	@echo VARIANTS COIN bitcoin_testnet bitcoin bitcoin_cash bitcoin_gold litecoin dogecoin dash zcash horizen komodo stratis peercoin pivx viacoin vertcoin stealth digibyte qtum bitcoin_private zcoin gamecredits zclassic xsn nix lbry terracoin
 
 else
 
 listvariants:
-	@echo VARIANTS COIN bitcoin_testnet bitcoin bitcoin_cash bitcoin_gold litecoin dogecoin dash zcash horizen komodo stratis peercoin pivx viacoin vertcoin stealth digibyte qtum bitcoin_private zcoin gamecredits zclassic xsn nix lbry resistance
+	@echo VARIANTS COIN bitcoin_testnet bitcoin bitcoin_cash bitcoin_gold litecoin dogecoin dash zcash horizen komodo stratis peercoin pivx viacoin vertcoin stealth digibyte qtum bitcoin_private zcoin gamecredits zclassic xsn nix lbry resistance terracoin
 
 endif
