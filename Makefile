@@ -174,11 +174,14 @@ else ifeq ($(COIN),ravencoin)
 # Ravencoin
 DEFINES   += COIN_P2PKH_VERSION=60 COIN_P2SH_VERSION=122 COIN_FAMILY=1 COIN_COINID=\"Ravencoin\" COIN_COINID_HEADER=\"RAVENCOIN\" COIN_COLOR_HDR=0x2E4A80 COIN_COLOR_DB=0x74829E COIN_COINID_NAME=\"Ravencoin\" COIN_COINID_SHORT=\"RVN\" COIN_KIND=COIN_KIND_RAVENCOIN
 APPNAME ="Ravencoin"
+else ifeq ($(COIN),monacoin)
+# Monacoin
+DEFINES += COIN_P2PKH_VERSION=50 COIN_P2SH_VERSION=55 COIN_FAMILY=1 COIN_COINID=\"Monacoin\" COIN_COINID_HEADER=\"MONACOIN\" COIN_COLOR_HDR=0xDECDA9 COIN_COLOR_DB=0xB3A27D COIN_COINID_NAME=\"Monacoin\" COIN_COINID_SHORT=\"MONA\" COIN_NATIVE_SEGWIT_PREFIX=\"mona\" COIN_KIND=COIN_KIND_MONACOIN COIN_FLAGS=FLAG_SEGWIT_CHANGE_SUPPORT
+APPNAME ="Monacoin"
 APP_LOAD_PARAMS += --path $(APP_PATH)
 else
 ifeq ($(filter clean,$(MAKECMDGOALS)),)
-$(error Unsupported COIN - use bitcoin_testnet, bitcoin, bitcoin_cash, bitcoin_gold, litecoin, dogecoin, dash, zcash, horizen, komodo, stratis, peercoin, pivx, viacoin, vertcoin, stealth, digibyte, qtum, bitcoin_private, zcoin, gamecredits, zclassic, xsn, nix, lbry, resistance)
-endif
+$(error Unsupported COIN - use bitcoin_testnet, bitcoin, bitcoin_cash, bitcoin_gold, litecoin, dogecoin, dash, zcash, horizen, komodo, stratis, peercoin, pivx, viacoin, vertcoin, stealth, digibyte, qtum, bitcoin_private, zcoin, gamecredits, zclassic, xsn, nix, lbry, resistance, monacoin)
 endif
 
 APP_LOAD_PARAMS += $(APP_LOAD_FLAGS)
