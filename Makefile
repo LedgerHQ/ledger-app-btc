@@ -33,7 +33,7 @@ APP_LOAD_FLAGS=--appFlags 0x250 --dep Bitcoin:$(APPVERSION)
 
 # simplify for tests
 ifndef COIN
-COIN=bitcoin
+COIN=cryptoescudo
 endif
 
 ifeq ($(COIN),bitcoin_testnet)
@@ -69,6 +69,11 @@ else ifeq ($(COIN),dogecoin)
 # Doge
 DEFINES   += COIN_P2PKH_VERSION=30 COIN_P2SH_VERSION=22 COIN_FAMILY=1 COIN_COINID=\"Dogecoin\" COIN_COINID_HEADER=\"DOGECOIN\" COIN_COLOR_HDR=0x65D196 COIN_COLOR_DB=0xB2E8CB COIN_COINID_NAME=\"Dogecoin\" COIN_COINID_SHORT=\"DOGE\" COIN_KIND=COIN_KIND_DOGE
 APPNAME ="Dogecoin"
+APP_LOAD_PARAMS += --path $(APP_PATH)
+else ifeq ($(COIN),cryptoescudo)
+# Cryptoescudo
+DEFINES   += COIN_P2PKH_VERSION=28 COIN_P2SH_VERSION=22 COIN_FAMILY=1 COIN_COINID=\"Cryptoescudo\" COIN_COINID_HEADER=\"CRYPTOESCUDO\" COIN_COLOR_HDR=0x65D196 COIN_COLOR_DB=0xB2E8CB COIN_COINID_NAME=\"Cryptoescudo\" COIN_COINID_SHORT=\"CESC\" COIN_KIND=COIN_KIND_CRYPTOESCUDO
+APPNAME ="Cryptoescudo"
 APP_LOAD_PARAMS += --path $(APP_PATH)
 else ifeq ($(COIN),dash)
 # Dash
@@ -177,7 +182,7 @@ APPNAME ="Ravencoin"
 APP_LOAD_PARAMS += --path $(APP_PATH)
 else
 ifeq ($(filter clean,$(MAKECMDGOALS)),)
-$(error Unsupported COIN - use bitcoin_testnet, bitcoin, bitcoin_cash, bitcoin_gold, litecoin, dogecoin, dash, zcash, horizen, komodo, stratis, peercoin, pivx, viacoin, vertcoin, stealth, digibyte, qtum, bitcoin_private, zcoin, gamecredits, zclassic, xsn, nix, lbry, resistance)
+$(error Unsupported COIN - use bitcoin_testnet, bitcoin, bitcoin_cash, bitcoin_gold, litecoin, dogecoin, cryptoescudo, dash, zcash, horizen, komodo, stratis, peercoin, pivx, viacoin, vertcoin, stealth, digibyte, qtum, bitcoin_private, zcoin, gamecredits, zclassic, xsn, nix, lbry, resistance)
 endif
 endif
 
@@ -319,11 +324,11 @@ dep/%.d: %.c Makefile
 ifeq ($(TARGET_NAME),TARGET_NANOX)
 
 listvariants:
-	@echo VARIANTS COIN bitcoin_testnet bitcoin bitcoin_cash bitcoin_gold litecoin dogecoin dash zcash horizen komodo stratis peercoin pivx viacoin vertcoin stealth digibyte qtum bitcoin_private zcoin gamecredits zclassic xsn nix lbry ravencoin
+	@echo VARIANTS COIN bitcoin_testnet bitcoin bitcoin_cash bitcoin_gold litecoin dogecoin cryptoescudo dash zcash horizen komodo stratis peercoin pivx viacoin vertcoin stealth digibyte qtum bitcoin_private zcoin gamecredits zclassic xsn nix lbry ravencoin
 
 else
 
 listvariants:
-	@echo VARIANTS COIN bitcoin_testnet bitcoin bitcoin_cash bitcoin_gold litecoin dogecoin dash zcash horizen komodo stratis peercoin pivx viacoin vertcoin stealth digibyte qtum bitcoin_private zcoin gamecredits zclassic xsn nix lbry ravencoin resistance
+	@echo VARIANTS COIN bitcoin_testnet bitcoin bitcoin_cash bitcoin_gold litecoin dogecoin cryptoescudo dash zcash horizen komodo stratis peercoin pivx viacoin vertcoin stealth digibyte qtum bitcoin_private zcoin gamecredits zclassic xsn nix lbry ravencoin resistance
 
 endif
