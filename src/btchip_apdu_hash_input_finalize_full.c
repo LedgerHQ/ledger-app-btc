@@ -44,7 +44,7 @@ static bool check_output_displayable() {
     bool displayable = true;
     unsigned char amount[8], isOpReturn, isP2sh, isNativeSegwit, j,
         nullAmount = 1;
-    unsigned char isOpCreate, isOpCall;
+    unsigned char isOpCreate = 0, isOpCall = 0, isOpSender = 0;
 
     for (j = 0; j < 8; j++) {
         if (btchip_context_D.currentOutput[j] != 0) {
@@ -62,12 +62,19 @@ static bool check_output_displayable() {
     isP2sh = btchip_output_script_is_p2sh(btchip_context_D.currentOutput + 8);
     isNativeSegwit = btchip_output_script_is_native_witness(
         btchip_context_D.currentOutput + 8);
-    isOpCreate =
-        btchip_output_script_is_op_create(btchip_context_D.currentOutput + 8,
-          sizeof(btchip_context_D.currentOutput) - 8);
-    isOpCall =
-        btchip_output_script_is_op_call(btchip_context_D.currentOutput + 8,
-          sizeof(btchip_context_D.currentOutput) - 8);
+    #ifdef HAVE_QTUM_SUPPORT
+    if(G_coin_config->kind == COIN_KIND_QTUM) {
+        isOpCreate =
+            btchip_output_script_is_op_create(btchip_context_D.currentOutput + 8,
+              sizeof(btchip_context_D.currentOutput) - 8);
+        isOpCall =
+            btchip_output_script_is_op_call(btchip_context_D.currentOutput + 8,
+              sizeof(btchip_context_D.currentOutput) - 8);
+        isOpSender =
+            btchip_output_script_is_op_sender(btchip_context_D.currentOutput + 8,
+              sizeof(btchip_context_D.currentOutput) - 8);
+    }
+    #endif
     if (((G_coin_config->kind == COIN_KIND_QTUM) &&
          !btchip_output_script_is_regular(btchip_context_D.currentOutput + 8) &&
          !isP2sh && !(nullAmount && isOpReturn) && !isOpCreate && !isOpCall) ||
@@ -77,13 +84,32 @@ static bool check_output_displayable() {
         PRINTF("Error : Unrecognized output script");
         THROW(EXCEPTION);
     }
+    #ifdef HAVE_QTUM_SUPPORT
+    if((G_coin_config->kind == COIN_KIND_QTUM) && isOpSender && (isOpCreate || isOpCall))
+    {
+        unsigned char *sig = 0;
+        unsigned int sigSize = 0;
+        btchip_get_sender_sig(btchip_context_D.currentOutput + 8,
+                                                sizeof(btchip_context_D.currentOutput) - 8, &sig, &sigSize);
+        if(!btchip_context_D.signOpSender && sigSize == 0)
+        {
+            PRINTF("Error : No op_sender signature");
+            THROW(EXCEPTION);
+        }
+        if(btchip_context_D.signOpSender && sigSize > 0)
+        {
+            PRINTF("Error : op_sender is already signed");
+            THROW(EXCEPTION);
+        }
+    }
+    #endif
     if (btchip_context_D.tmpCtx.output.changeInitialized && !isOpReturn) {
         bool changeFound = false;
         unsigned char addressOffset =
             (isNativeSegwit ? OUTPUT_SCRIPT_NATIVE_WITNESS_PROGRAM_OFFSET
                             : isP2sh ? OUTPUT_SCRIPT_P2SH_PRE_LENGTH
                                      : OUTPUT_SCRIPT_REGULAR_PRE_LENGTH);
-        if (!isP2sh &&
+        if (!isP2sh && !isOpSender &&
             os_memcmp(btchip_context_D.currentOutput + 8 + addressOffset,
                       btchip_context_D.tmpCtx.output.changeAddress,
                       20) == 0) {
@@ -176,7 +202,7 @@ bool handle_output_state() {
                 break;
             }
             scriptSize =
-                btchip_read_u32(btchip_context_D.currentOutput + 9, 0, 0);
+                btchip_read_u16(btchip_context_D.currentOutput + 9, 0, 0);
             discardSize = 3;
         } else {
             // Unrealistically large script
@@ -332,10 +358,13 @@ unsigned short btchip_apdu_hash_input_finalize_full_internal(
                     sw = BTCHIP_SW_INCORRECT_DATA;
                     goto discardTransaction;
                 }
+                #ifndef USE_NO_OVERWINTER
                 if (btchip_context_D.usingOverwinter) {
                     cx_hash(&btchip_context_D.transactionHashFull.blake2b.header, 0, G_io_apdu_buffer + ISO_OFFSET_CDATA + hashOffset, apduLength - hashOffset, NULL, 0);
                 }
-                else {
+                else
+                #endif
+                {
                     PRINTF("--- ADD TO HASH FULL:\n%.*H\n", apduLength - hashOffset, G_io_apdu_buffer + ISO_OFFSET_CDATA + hashOffset);
                     cx_hash(&btchip_context_D.transactionHashFull.sha256.header, 0,
                         G_io_apdu_buffer + ISO_OFFSET_CDATA + hashOffset,
@@ -392,10 +421,13 @@ unsigned short btchip_apdu_hash_input_finalize_full_internal(
 
             if (btchip_context_D.usingSegwit) {
                 if (!btchip_context_D.segwitParsedOnce) {
+                    #ifndef USE_NO_OVERWINTER
                     if (btchip_context_D.usingOverwinter) {
                         cx_hash(&btchip_context_D.transactionHashFull.blake2b.header, CX_LAST, btchip_context_D.segwit.cache.hashedOutputs, 0, btchip_context_D.segwit.cache.hashedOutputs, 32);
                     }
-                    else {
+                    else
+                    #endif
+                    {
                         cx_hash(&btchip_context_D.transactionHashFull.sha256.header,
                             CX_LAST,
                             btchip_context_D.segwit.cache.hashedOutputs, 0,
@@ -470,7 +502,11 @@ unsigned short btchip_apdu_hash_input_finalize_full_internal(
             }
 
             if (btchip_context_D.usingSegwit &&
-                !btchip_context_D.segwitParsedOnce) {
+                !btchip_context_D.segwitParsedOnce
+                #ifdef HAVE_QTUM_SUPPORT
+                && !btchip_context_D.signOpSender
+                #endif
+                                                   ) {
                 // This input cannot be signed when using segwit - just restart.
                 btchip_context_D.segwitParsedOnce = 1;
                 PRINTF("Segwit parsed once\n");
@@ -592,7 +628,11 @@ unsigned char btchip_bagl_user_action(unsigned char confirming) {
             btchip_context_D.transactionContext.firstSigned = 0;
 
             if (btchip_context_D.usingSegwit &&
-                !btchip_context_D.segwitParsedOnce) {
+                !btchip_context_D.segwitParsedOnce
+                #ifdef HAVE_QTUM_SUPPORT
+                && !btchip_context_D.signOpSender
+                #endif
+                                                  ) {
                 // This input cannot be signed when using segwit - just restart.
                 btchip_context_D.segwitParsedOnce = 1;
                 PRINTF("Segwit parsed once\n");

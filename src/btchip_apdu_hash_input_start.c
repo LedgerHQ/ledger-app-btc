@@ -27,6 +27,7 @@
 #define P2_NEW_SEGWIT_OVERWINTER 0x04
 #define P2_NEW_SEGWIT_SAPLING 0x05
 #define P2_CONTINUE 0x80
+#define P2_NEW_SENDER 0x81
 
 #define IS_INPUT()                                                          \
     (G_io_apdu_buffer[ISO_OFFSET_LC] - 1 > 8                                \
@@ -64,6 +65,9 @@ unsigned short btchip_apdu_hash_input_start() {
     }
 
     if ((G_io_apdu_buffer[ISO_OFFSET_P2] == P2_NEW) ||
+        #ifdef HAVE_QTUM_SUPPORT
+        (G_io_apdu_buffer[ISO_OFFSET_P2] == P2_NEW_SENDER) ||
+        #endif
         (G_io_apdu_buffer[ISO_OFFSET_P2] == P2_NEW_SEGWIT) ||
         (G_io_apdu_buffer[ISO_OFFSET_P2] == P2_NEW_SEGWIT_CASHADDR) ||
         (G_io_apdu_buffer[ISO_OFFSET_P2] == P2_NEW_SEGWIT_OVERWINTER) ||
@@ -78,6 +82,10 @@ unsigned short btchip_apdu_hash_input_start() {
                 (G_io_apdu_buffer[ISO_OFFSET_P2] == P2_NEW_SEGWIT_SAPLING);
             unsigned char usingCashAddr =
                 (G_io_apdu_buffer[ISO_OFFSET_P2] == P2_NEW_SEGWIT_CASHADDR);
+            #ifdef HAVE_QTUM_SUPPORT
+            unsigned char signOpSender =
+                (G_io_apdu_buffer[ISO_OFFSET_P2] == P2_NEW_SENDER);
+            #endif
             // Request PIN validation
             // Only request PIN validation (user presence) to start a new
             // transaction signing flow.
@@ -92,7 +100,14 @@ unsigned short btchip_apdu_hash_input_start() {
             btchip_context_D.transactionContext.firstSigned = 1;
             btchip_context_D.transactionContext.consumeP2SH = 0;
             btchip_context_D.transactionContext.relaxed = 0;
+            #ifdef HAVE_QTUM_SUPPORT
+            if(signOpSender)
+                usingSegwit = 1;
+            #endif
             btchip_context_D.usingSegwit = usingSegwit;
+            #ifdef HAVE_QTUM_SUPPORT
+            btchip_context_D.signOpSender = signOpSender;
+            #endif
             btchip_context_D.usingCashAddr =
                 (G_coin_config->kind == COIN_KIND_BITCOIN_CASH ? usingCashAddr
                                                                : 0);

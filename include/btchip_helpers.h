@@ -35,14 +35,26 @@ unsigned char btchip_output_script_is_p2sh(unsigned char *buffer);
 unsigned char btchip_output_script_is_op_return(unsigned char *buffer);
 unsigned char btchip_output_script_is_native_witness(unsigned char *buffer);
 
+#ifdef HAVE_QTUM_SUPPORT
 unsigned char btchip_output_script_is_op_create(unsigned char *buffer,
                                                 size_t size);
 unsigned char btchip_output_script_is_op_call(unsigned char *buffer,
                                                 size_t size);
+unsigned char btchip_output_script_is_op_sender(unsigned char *buffer,
+                                                size_t size);
+unsigned char btchip_get_script_size(unsigned char *buffer, size_t maxSize, 
+                                                unsigned int *scriptSize, unsigned int *discardSize);
+unsigned char btchip_get_script_sender_address(unsigned char *buffer,
+                                                size_t size, unsigned char *script);
+unsigned char btchip_get_sender_sig(unsigned char *buffer,
+                                                size_t size, unsigned char **sig, unsigned int *sigSize);
+#endif
 
 void btchip_sleep16(unsigned short delay);
 void btchip_sleep32(unsigned long int delayEach, unsigned long int delayRepeat);
 
+unsigned long int btchip_read_u16(unsigned char *buffer, unsigned char be,
+                                  unsigned char skipSign);
 unsigned long int btchip_read_u32(unsigned char *buffer, unsigned char be,
                                   unsigned char skipSign);
 

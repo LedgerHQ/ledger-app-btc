@@ -56,6 +56,7 @@ unsigned short btchip_apdu_hash_sign() {
 
             // Zcash special - store parameters for later
 
+            #ifndef USE_NO_OVERWINTER
             if ((btchip_context_D.usingOverwinter) &&
                 (!btchip_context_D.overwinterSignReady) &&
                 (btchip_context_D.segwitParsedOnce) &&
@@ -75,6 +76,7 @@ unsigned short btchip_apdu_hash_sign() {
                 CLOSE_TRY;
                 return BTCHIP_SW_OK;
             }
+            #endif
 
             if (btchip_context_D.transactionContext.transactionState !=
                 BTCHIP_TRANSACTION_SIGN_READY) {
@@ -83,11 +85,13 @@ unsigned short btchip_apdu_hash_sign() {
                 goto discardTransaction;
             }
 
+            #ifndef USE_NO_OVERWINTER
             if (btchip_context_D.usingOverwinter && !btchip_context_D.overwinterSignReady) {
                 PRINTF("Overwinter not ready to sign\n");
                 sw = BTCHIP_SW_CONDITIONS_OF_USE_NOT_SATISFIED;
                 goto discardTransaction;
             }
+            #endif
 
             // Read parameters
             if (G_io_apdu_buffer[ISO_OFFSET_CDATA] > MAX_BIP32_PATH) {
@@ -130,9 +134,18 @@ unsigned short btchip_apdu_hash_sign() {
             if (!btchip_context_D.usingOverwinter) {
                 btchip_write_u32_le(dataBuffer, lockTime);
                 btchip_write_u32_le(dataBuffer + 4, sighashType);
-                PRINTF("--- ADD TO HASH FULL:\n%.*H\n", sizeof(dataBuffer), dataBuffer);
-                cx_hash(&btchip_context_D.transactionHashFull.sha256.header, 0,
-                    dataBuffer, sizeof(dataBuffer), NULL, 0);
+                #ifdef HAVE_QTUM_SUPPORT
+                if(btchip_context_D.signOpSender)
+                {
+                    btchip_hash_sender_finalize(dataBuffer, sizeof(dataBuffer));
+                }
+                else
+                #endif
+                {
+                    PRINTF("--- ADD TO HASH FULL:\n%.*H\n", sizeof(dataBuffer), dataBuffer);
+                    cx_hash(&btchip_context_D.transactionHashFull.sha256.header, 0,
+                        dataBuffer, sizeof(dataBuffer), NULL, 0);
+                }
             }
 
             // Check if the path needs to be enforced
@@ -179,13 +192,26 @@ void btchip_bagl_user_action_signtx(unsigned char confirming, unsigned char dire
         unsigned char hash[32];
         // Fetch the private key
         btchip_private_derive_keypair(btchip_context_D.transactionSummary.keyPath, 0, NULL, &private_key, NULL);
+        #ifndef USE_NO_OVERWINTER
         if (btchip_context_D.usingOverwinter) {
             cx_hash(&btchip_context_D.transactionHashFull.blake2b.header, CX_LAST, hash, 0, hash, 32);
         }
-        else {
+        else
+        #endif
+        {
             cx_sha256_t localHash;
-            cx_hash(&btchip_context_D.transactionHashFull.sha256.header, CX_LAST,
-                hash, 0, hash, 32);
+            #ifdef HAVE_QTUM_SUPPORT
+            if(btchip_context_D.signOpSender)
+            {
+                cx_hash(&btchip_context_D.transactionOutputHash.header, CX_LAST,
+                    hash, 0, hash, 32);
+            }
+            else
+            #endif
+            {
+                cx_hash(&btchip_context_D.transactionHashFull.sha256.header, CX_LAST,
+                    hash, 0, hash, 32);
+            }
             PRINTF("Hash1\n%.*H\n", sizeof(hash), hash);
 
             // Rehash

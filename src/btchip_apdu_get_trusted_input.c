@@ -49,6 +49,9 @@ unsigned short btchip_apdu_get_trusted_input() {
         btchip_context_D.transactionHashOption = TRANSACTION_HASH_FULL;
         btchip_context_D.usingSegwit = 0;
         btchip_context_D.usingOverwinter = 0;
+        #ifdef HAVE_QTUM_SUPPORT
+        btchip_context_D.signOpSender = 0;
+        #endif
     } else if (G_io_apdu_buffer[ISO_OFFSET_P1] != GET_TRUSTED_INPUT_P1_NEXT) {
         return BTCHIP_SW_INCORRECT_P1_P2;
     }
