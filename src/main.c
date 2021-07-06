@@ -841,7 +841,12 @@ error:
 #define MAIDSAFE_ASSETID 3
 #define USDT_ASSETID 31
 
+#define RAVENCOIN_NULL_ASSET_TAG 0
+#define RAVENCOIN_NULL_ASSET_VERIFIER 1
+#define RAVENCOIN_NULL_ASSET_RESTRICTED 2
+
 void get_address_from_output_script(unsigned char* script, int script_size, char* out, int out_size) {
+
     if (btchip_output_script_is_op_return(script)) {
         strcpy(out, "OP_RETURN");
         return;
@@ -855,6 +860,19 @@ void get_address_from_output_script(unsigned char* script, int script_size, char
         btchip_output_script_is_op_call(script, script_size)) {
         strcpy(out, "OP_CALL");
         return;
+    }
+    if ((G_coin_config->kind == COIN_KIND_RAVENCOIN)) {
+        switch(btchip_output_script_try_get_ravencoin_asset_tag_type(script)) {
+            case RAVENCOIN_NULL_ASSET_TAG:
+                strcpy(out, "ASSET TAG");
+                return;
+            case RAVENCOIN_NULL_ASSET_VERIFIER:
+                strcpy(out, "ASSET VERIFIER");
+                return;
+            case RAVENCOIN_NULL_ASSET_RESTRICTED:
+                strcpy(out, "ASSET RESTRICTED");
+                return;
+        }
     }
     if (btchip_output_script_is_native_witness(script)) {
         if (G_coin_config->native_segwit_prefix) {
@@ -870,8 +888,14 @@ void get_address_from_output_script(unsigned char* script, int script_size, char
     unsigned short textSize;
     int addressOffset = 3;
     unsigned short version = G_coin_config->p2sh_version;
+    unsigned int dummy;
 
-    if (btchip_output_script_is_regular(script)) {
+    if (G_coin_config->kind == COIN_KIND_RAVENCOIN
+        && btchip_output_script_get_ravencoin_asset_ptr(script, script_size, &dummy)
+        && btchip_output_script_is_regular_ravencoin_asset(script)) {
+        addressOffset = 4;
+        version = G_coin_config->p2pkh_version;
+    } else if (btchip_output_script_is_regular(script)) {
         addressOffset = 4;
         version = G_coin_config->p2pkh_version;
     }
@@ -907,6 +931,8 @@ uint8_t prepare_single_output() {
     unsigned int offset = 0;
     unsigned short textSize;
     char tmp[80] = {0};
+    int ravencoin_asset_ptr = -1;
+    unsigned char str_len;
 
     btchip_swap_bytes(amount, btchip_context_D.currentOutput + offset, 8);
     offset += 8;
@@ -942,15 +968,42 @@ uint8_t prepare_single_output() {
             vars.tmp.fullAmount[textSize + headerLength] = '\0';
     }
     else {
-        os_memmove(vars.tmp.fullAmount, G_coin_config->name_short,
-               strlen(G_coin_config->name_short));
-        vars.tmp.fullAmount[strlen(G_coin_config->name_short)] = ' ';
-        btchip_context_D.tmp =
-            (unsigned char *)(vars.tmp.fullAmount +
-                          strlen(G_coin_config->name_short) + 1);
+        if ((G_coin_config->kind == COIN_KIND_RAVENCOIN) &&
+            (btchip_output_script_get_ravencoin_asset_ptr(btchip_context_D.currentOutput + offset, \
+             sizeof(btchip_context_D.currentOutput) - offset, \
+             &ravencoin_asset_ptr))) {
+            unsigned char type;
+            unsigned char one_in_sats[8] = {0x00, 0xE1, 0xF5, 0x05, 0x00, 0x00, 0x00, 0x00};
+            type = (btchip_context_D.currentOutput + offset)[ravencoin_asset_ptr++];
+            str_len = (btchip_context_D.currentOutput + offset)[ravencoin_asset_ptr++];
+            btchip_swap_bytes_reversed(vars.tmp.fullAmount, btchip_context_D.currentOutput + offset + ravencoin_asset_ptr, str_len);
+            ravencoin_asset_ptr += str_len;
+            vars.tmp.fullAmount[str_len] = ' ';
+            btchip_context_D.tmp =
+                    (unsigned char *)(vars.tmp.fullAmount +
+                                      str_len + 1);
+            if (type == 0x6F) {
+                // Ownership amounts do not have an associated amount; give it 100,000,000 virtual sats
+                btchip_swap_bytes(amount, one_in_sats, 8);
+            }
+            else {
+                btchip_swap_bytes(amount, btchip_context_D.currentOutput + offset + ravencoin_asset_ptr, 8);
+            }
+        }
+        else {
+            PRINTF("Normal out parsing\n");
+            str_len = strlen(G_coin_config->name_short);
+            os_memmove(vars.tmp.fullAmount, G_coin_config->name_short,
+                       str_len);
+            vars.tmp.fullAmount[str_len] = ' ';
+            btchip_context_D.tmp =
+                    (unsigned char *)(vars.tmp.fullAmount +
+                                      str_len + 1);
+        }
         textSize = btchip_convert_hex_amount_to_displayable(amount);
-        vars.tmp.fullAmount[textSize + strlen(G_coin_config->name_short) + 1] =
+        vars.tmp.fullAmount[textSize + str_len + 1] =
             '\0';
+
     }
 
     return 1;

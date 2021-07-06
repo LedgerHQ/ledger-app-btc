@@ -31,7 +31,9 @@
 #define OUTPUT_SCRIPT_NATIVE_WITNESS_PROGRAM_OFFSET 3
 
 unsigned char btchip_output_script_is_regular(unsigned char *buffer);
+unsigned char btchip_output_script_is_regular_ravencoin_asset(unsigned char *buffer);
 unsigned char btchip_output_script_is_p2sh(unsigned char *buffer);
+unsigned char btchip_output_script_is_p2sh_ravencoin_asset(unsigned char *buffer);
 unsigned char btchip_output_script_is_op_return(unsigned char *buffer);
 unsigned char btchip_output_script_is_native_witness(unsigned char *buffer);
 
@@ -39,6 +41,9 @@ unsigned char btchip_output_script_is_op_create(unsigned char *buffer,
                                                 size_t size);
 unsigned char btchip_output_script_is_op_call(unsigned char *buffer,
                                                 size_t size);
+
+signed char btchip_output_script_try_get_ravencoin_asset_tag_type(unsigned char *buffer);
+unsigned char btchip_output_script_get_ravencoin_asset_ptr(unsigned char *buffer, size_t size, int *ptr);
 
 void btchip_sleep16(unsigned short delay);
 void btchip_sleep32(unsigned long int delayEach, unsigned long int delayRepeat);
@@ -79,6 +84,8 @@ unsigned char bip32_print_path(unsigned char *bip32Path, char* out, unsigned cha
 // setParameter);
 #define btchip_set_check_internal_structure_integrity(x)
 void btchip_swap_bytes(unsigned char *target, unsigned char *source,
+                       unsigned char size);
+void btchip_swap_bytes_reversed(unsigned char *target, unsigned char *source,
                        unsigned char size);
 
 void btchip_sign_finalhash(void *keyContext,

@@ -59,6 +59,7 @@ const unsigned char ZEN_OUTPUT_SCRIPT_POST[] = {
 };                    // BIP0115 Replay Protection
 
 unsigned char btchip_output_script_is_regular(unsigned char *buffer) {
+    int i;
     if (G_coin_config->native_segwit_prefix) {
         if ((os_memcmp(buffer, TRANSACTION_OUTPUT_SCRIPT_P2WPKH_PRE,
                        sizeof(TRANSACTION_OUTPUT_SCRIPT_P2WPKH_PRE)) == 0) ||
@@ -75,9 +76,23 @@ unsigned char btchip_output_script_is_regular(unsigned char *buffer) {
                        sizeof(ZEN_OUTPUT_SCRIPT_POST)) == 0)) {
             return 1;
         }
-    } else {
+    }
+    else {
         if ((os_memcmp(buffer, TRANSACTION_OUTPUT_SCRIPT_PRE,
                        sizeof(TRANSACTION_OUTPUT_SCRIPT_PRE)) == 0) &&
+            (os_memcmp(buffer + sizeof(TRANSACTION_OUTPUT_SCRIPT_PRE) + 20,
+                       TRANSACTION_OUTPUT_SCRIPT_POST,
+                       sizeof(TRANSACTION_OUTPUT_SCRIPT_POST)) == 0)) {
+            return 1;
+        }
+    }
+    return 0;
+}
+
+unsigned char btchip_output_script_is_regular_ravencoin_asset(unsigned char *buffer) {
+    if (G_coin_config->kind == COIN_KIND_RAVENCOIN) {
+        if ((os_memcmp(buffer + 1, TRANSACTION_OUTPUT_SCRIPT_PRE + 1,
+                       sizeof(TRANSACTION_OUTPUT_SCRIPT_PRE) - 1) == 0) &&
             (os_memcmp(buffer + sizeof(TRANSACTION_OUTPUT_SCRIPT_PRE) + 20,
                        TRANSACTION_OUTPUT_SCRIPT_POST,
                        sizeof(TRANSACTION_OUTPUT_SCRIPT_POST)) == 0)) {
@@ -99,6 +114,19 @@ unsigned char btchip_output_script_is_p2sh(unsigned char *buffer) {
     } else {
         if ((os_memcmp(buffer, TRANSACTION_OUTPUT_SCRIPT_P2SH_PRE,
                        sizeof(TRANSACTION_OUTPUT_SCRIPT_P2SH_PRE)) == 0) &&
+            (os_memcmp(buffer + sizeof(TRANSACTION_OUTPUT_SCRIPT_P2SH_PRE) + 20,
+                       TRANSACTION_OUTPUT_SCRIPT_P2SH_POST,
+                       sizeof(TRANSACTION_OUTPUT_SCRIPT_P2SH_POST)) == 0)) {
+            return 1;
+        }
+    }
+    return 0;
+}
+
+unsigned char btchip_output_script_is_p2sh_ravencoin_asset(unsigned char *buffer) {
+    if (G_coin_config->kind == COIN_KIND_RAVENCOIN) {
+        if ((os_memcmp(buffer + 1, TRANSACTION_OUTPUT_SCRIPT_P2SH_PRE + 1,
+                       sizeof(TRANSACTION_OUTPUT_SCRIPT_P2SH_PRE) - 1) == 0) &&
             (os_memcmp(buffer + sizeof(TRANSACTION_OUTPUT_SCRIPT_P2SH_PRE) + 20,
                        TRANSACTION_OUTPUT_SCRIPT_P2SH_POST,
                        sizeof(TRANSACTION_OUTPUT_SCRIPT_P2SH_POST)) == 0)) {
@@ -147,6 +175,90 @@ unsigned char btchip_output_script_is_op_create(unsigned char *buffer,
 unsigned char btchip_output_script_is_op_call(unsigned char *buffer,
                                               size_t size) {
     return output_script_is_op_create_or_call(buffer, size, 0xC2);
+}
+
+signed char btchip_output_script_try_get_ravencoin_asset_tag_type(unsigned char *buffer) {
+    if (btchip_output_script_is_regular(buffer) ||
+            btchip_output_script_is_p2sh(buffer) ||
+            btchip_output_script_is_op_return(buffer) ||
+            (buffer[1] != 0xC0)) {
+        return -1;
+    }
+    if (buffer[2] == 0x50) {
+        if (buffer[3] == 0x50) {
+            return 2;
+        }
+        return 1;
+    }
+    return 0;
+}
+
+unsigned char btchip_output_script_get_ravencoin_asset_ptr(unsigned char *buffer, size_t size, int *ptr) {
+    // This method is also used in check_output_displayable and needs to ensure no overflows happen from bad scripts
+    unsigned int script_ptr = 1; // Skip the first pushdata op
+    unsigned int op = -1;
+    unsigned int final_op = buffer[0];
+    unsigned char asset_len;
+
+    if (final_op >= size || buffer[final_op] != 0x75) {
+        PRINTF("Ravencoin pointer quick return\n");
+        return 0;
+    }
+    while (script_ptr < final_op - 7) { // Definitely a bad asset script; too short
+        op = buffer[script_ptr++];
+        if (op == 0xC0) {
+            // Verifying script
+            if ((buffer[script_ptr+1] == 0x72) &&
+                (buffer[script_ptr+2] == 0x76) &&
+                (buffer[script_ptr+3] == 0x6E)) {
+                asset_len = buffer[script_ptr+5];
+                if (asset_len > 32) { // Invalid script
+                    return 0;
+                }
+                if (buffer[script_ptr+4] == 0x6F) {
+                    // Ownership assets will not have an amount
+                    if (script_ptr+5+asset_len >= final_op) {
+                        return 0; // Too small
+                    }
+                }
+                else {
+                    if (script_ptr+5+asset_len+8 >= final_op) {
+                        return 0; // Too small
+                    }
+                }
+                *ptr = script_ptr + 4;
+            } else {
+                asset_len = buffer[script_ptr+6];
+                if (asset_len > 32) { // Invalid script
+                    return 0;
+                }
+                if (buffer[script_ptr+5] == 0x6F) {
+                    // Ownership assets will not have an amount
+                    if (script_ptr+6+asset_len >= final_op) {
+                        return 0; // Too small
+                    }
+                }
+                else {
+                    if (script_ptr+6+asset_len+8 >= final_op) {
+                        return 0; // Too small
+                    }
+                }
+                *ptr = script_ptr + 5;
+            }
+            return 1;
+        }
+        else if (op <= 0x4E) {
+            if (op < 0x4C) {
+                script_ptr += op;
+            }
+            else {
+                script_ptr += (buffer[script_ptr] + 1);
+            }
+            //There shouldn't be anything pushed larger than 256 bytes in an asset transfer script
+        }
+    }
+    PRINTF("Ravencoin pointer end\n");
+    return 0;
 }
 
 unsigned char btchip_rng_u8_modulo(unsigned char modulo) {
@@ -262,6 +374,14 @@ void btchip_swap_bytes(unsigned char *target, unsigned char *source,
     unsigned char i;
     for (i = 0; i < size; i++) {
         target[i] = source[size - 1 - i];
+    }
+}
+
+void btchip_swap_bytes_reversed(unsigned char *target, unsigned char *source,
+                                unsigned char size) {
+    unsigned char i;
+    for (i = 0; i < size; i++) {
+        target[i] = source[i];
     }
 }
 
